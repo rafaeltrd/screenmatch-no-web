@@ -1,5 +1,6 @@
 package br.com.alura.screenmatch.menu;
 
+import br.com.alura.screenmatch.model.Episode;
 import br.com.alura.screenmatch.model.EpisodeInfo;
 import br.com.alura.screenmatch.model.SeasonInfo;
 import br.com.alura.screenmatch.model.SeriesInfo;
@@ -53,5 +54,14 @@ public class SeriesMenu {
                 .sorted(Comparator.comparing(EpisodeInfo::rating).reversed())
                 .limit(5)
                 .forEach(System.out::println);
+
+        List<Episode> episodes = seasonList.stream()
+                .flatMap(s -> s.episodes().stream()
+                        .map(e -> new Episode(s.season(), e))
+                        ).collect(Collectors.toList());
+
+        System.out.println("\n---------\n");
+
+        episodes.forEach(System.out::println);
     }
 }
