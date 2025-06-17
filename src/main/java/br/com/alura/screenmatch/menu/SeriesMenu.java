@@ -1,13 +1,13 @@
 package br.com.alura.screenmatch.menu;
 
+import br.com.alura.screenmatch.model.EpisodeInfo;
 import br.com.alura.screenmatch.model.SeasonInfo;
 import br.com.alura.screenmatch.model.SeriesInfo;
 import br.com.alura.screenmatch.service.APIConsumption;
 import br.com.alura.screenmatch.service.DataConverter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SeriesMenu {
     private Scanner sc = new Scanner(System.in);
@@ -38,5 +38,20 @@ public class SeriesMenu {
         }
 
         seasonList.forEach(System.out::println);
+
+        seasonList.forEach(s -> s.episodes().
+                forEach(e -> System.out.println(e.title())));
+
+        List<EpisodeInfo> episodeInfo = seasonList.stream()
+                .flatMap(s -> s.episodes().stream())
+                .collect(Collectors.toList());
+
+
+        System.out.println("\nTop 5 episodes: ");
+        episodeInfo.stream()
+                .filter(e -> !e.rating().equalsIgnoreCase("N/A"))
+                .sorted(Comparator.comparing(EpisodeInfo::rating).reversed())
+                .limit(5)
+                .forEach(System.out::println);
     }
 }
