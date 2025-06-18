@@ -7,6 +7,8 @@ import br.com.alura.screenmatch.model.SeriesInfo;
 import br.com.alura.screenmatch.service.APIConsumption;
 import br.com.alura.screenmatch.service.DataConverter;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -63,5 +65,20 @@ public class SeriesMenu {
         System.out.println("\n---------\n");
 
         episodes.forEach(System.out::println);
+
+        System.out.print("\nStarting from which year do you want to view the episodes? ");
+        int year = sc.nextInt();
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        LocalDate searchDate = LocalDate.of(year, 1, 1);
+
+        episodes.stream().filter(e -> e.getReleased() != null && e.getReleased().isAfter(searchDate))
+                .forEach(e -> System.out.println(
+                        "Season: " + e.getSeason()
+                        + ", title: " + e.getTitle()
+                        + ", episode: " + e.getEpisodeNumber()
+                        + ", release date: " + e.getReleased().format(dtf)
+                ));
     }
 }
