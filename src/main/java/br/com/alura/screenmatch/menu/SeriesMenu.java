@@ -29,7 +29,7 @@ public class SeriesMenu {
 
         System.out.println("\n" + seriesInfo);
 
-        System.out.println("\n-------------\n");
+        System.out.println();
 
         List<SeasonInfo> seasonList = new ArrayList<>();
 
@@ -49,7 +49,6 @@ public class SeriesMenu {
                 .flatMap(s -> s.episodes().stream())
                 .collect(Collectors.toList());
 
-
         System.out.println("\nTop 5 episodes: ");
         episodeInfo.stream()
                 .filter(e -> !e.rating().equalsIgnoreCase("N/A"))
@@ -62,9 +61,22 @@ public class SeriesMenu {
                         .map(e -> new Episode(s.season(), e))
                         ).collect(Collectors.toList());
 
-        System.out.println("\n---------\n");
+        System.out.println();
 
         episodes.forEach(System.out::println);
+
+        System.out.print("\nEnter the episode name: ");
+        String titleSnippet = sc.nextLine();
+
+        Optional<Episode> foundEpisode = episodes.stream()
+                .filter(e -> e.getTitle().toUpperCase().contains(titleSnippet.toUpperCase()))
+                .findFirst();
+
+        if(foundEpisode.isPresent()){
+            System.out.println("Episode found! " + foundEpisode.get());
+        }else {
+            System.out.println("Episode not found!");
+        }
 
         System.out.print("\nStarting from which year do you want to view the episodes? ");
         int year = sc.nextInt();
