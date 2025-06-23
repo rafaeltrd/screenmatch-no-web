@@ -42,6 +42,8 @@ public class SeriesMenu {
 
         seasonList.forEach(System.out::println);
 
+        System.out.println();
+
         seasonList.forEach(s -> s.episodes().
                 forEach(e -> System.out.println(e.title())));
 
@@ -92,5 +94,15 @@ public class SeriesMenu {
                         + ", episode: " + e.getEpisodeNumber()
                         + ", release date: " + e.getReleased().format(dtf)
                 ));
+
+        System.out.println("Average per season: ");
+
+        Map<Integer, Double> ratingPerSeason = episodes.stream()
+                .filter(e -> e.getRating() != null)
+                .collect(Collectors.groupingBy(Episode::getSeason,
+                        Collectors.averagingDouble(Episode::getRating)));
+
+        ratingPerSeason.forEach((season, avg) ->
+                System.out.printf("Season %d: Average = %.2f\n", season, avg));
     }
 }
