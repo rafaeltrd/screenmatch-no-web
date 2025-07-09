@@ -1,13 +1,16 @@
 package br.com.alura.screenmatch.menu;
 
 import br.com.alura.screenmatch.model.SeasonInfo;
+import br.com.alura.screenmatch.model.Series;
 import br.com.alura.screenmatch.model.SeriesInfo;
 import br.com.alura.screenmatch.service.APIConsumption;
 import br.com.alura.screenmatch.service.DataConverter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class SeriesMenu {
     private Scanner sc = new Scanner(System.in);
@@ -78,6 +81,12 @@ public class SeriesMenu {
     }
 
     private void listSearchedSeries(){
-        seriesInfos.forEach(System.out::println);
+        List<Series> series = new ArrayList<>();
+        series = seriesInfos.stream()
+                .map(i -> new Series(i))
+                        .collect(Collectors.toList());
+
+        series.stream().sorted(Comparator.comparing(Series::getGenre))
+                .forEach(System.out::println);
     }
 }
