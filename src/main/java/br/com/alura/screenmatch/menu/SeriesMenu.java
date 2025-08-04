@@ -3,8 +3,10 @@ package br.com.alura.screenmatch.menu;
 import br.com.alura.screenmatch.model.SeasonInfo;
 import br.com.alura.screenmatch.model.Series;
 import br.com.alura.screenmatch.model.SeriesInfo;
+import br.com.alura.screenmatch.repository.SeriesRepository;
 import br.com.alura.screenmatch.service.APIConsumption;
 import br.com.alura.screenmatch.service.DataConverter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,6 +22,12 @@ public class SeriesMenu {
     private final String ADDRESS = "http://www.omdbapi.com/";
     private final String API_KEY = "?apikey=20731567&t=";
     private List<SeriesInfo> seriesInfos = new ArrayList<>();
+
+    private SeriesRepository repository;
+
+    public SeriesMenu(SeriesRepository repository) {
+        this.repository = repository;
+    }
 
     public void showMenu(){
         int choice = -1;
@@ -54,10 +62,13 @@ public class SeriesMenu {
             }
         }
     }
+
     private void searchSeriesWeb(){
         SeriesInfo info = getSeriesInfo();
+        //seriesInfos.add(info);
+        Series series = new Series(info);
+        repository.save(series);
         System.out.println(info);
-        seriesInfos.add(info);
     }
 
     private SeriesInfo getSeriesInfo(){
