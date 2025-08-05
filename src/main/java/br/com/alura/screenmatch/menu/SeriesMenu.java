@@ -59,6 +59,7 @@ public class SeriesMenu {
 
                 default:
                     System.out.println("Invalid option!");
+                    break;
             }
         }
     }
@@ -92,11 +93,7 @@ public class SeriesMenu {
     }
 
     private void listSearchedSeries(){
-        List<Series> series = new ArrayList<>();
-        series = seriesInfos.stream()
-                .map(i -> new Series(i))
-                        .collect(Collectors.toList());
-
+        List<Series> series = repository.findAll();
         series.stream().sorted(Comparator.comparing(Series::getGenre))
                 .forEach(System.out::println);
     }

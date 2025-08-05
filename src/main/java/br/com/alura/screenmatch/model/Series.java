@@ -27,6 +27,8 @@ public class Series {
     @Transient
     private List<Episode> episodes = new ArrayList<>();
 
+    public Series(){}
+
     public Series(SeriesInfo seriesInfo){
         this.title = seriesInfo.title();
         this.totalSeasons = seriesInfo.totalSeasons();
