@@ -24,7 +24,7 @@ public class Series {
     private String poster;
     private String actors;
 
-    @Transient
+    @OneToMany(mappedBy = "series", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Episode> episodes = new ArrayList<>();
 
     public Series(){}
@@ -49,6 +49,11 @@ public class Series {
 
     public List<Episode> getEpisodes() {
         return episodes;
+    }
+
+    public void setEpisodes(List<Episode> episodes) {
+        episodes.forEach(e -> e.setSeries(this));
+        this.episodes = episodes;
     }
 
     public String getTitle() {
@@ -117,7 +122,8 @@ public class Series {
                 Featured actors: %s
                 Total seasons: %d
                 Poster: %s
+                Episodes: %s
                 """.formatted(title, genre, plot,
-                rating, actors,totalSeasons, poster);
+                rating, actors,totalSeasons, poster, episodes);
     }
 }
