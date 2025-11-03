@@ -7,7 +7,6 @@ import br.com.alura.screenmatch.model.SeriesInfo;
 import br.com.alura.screenmatch.repository.SeriesRepository;
 import br.com.alura.screenmatch.service.APIConsumption;
 import br.com.alura.screenmatch.service.DataConverter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,7 +17,7 @@ public class SeriesMenu {
     private DataConverter converter = new DataConverter();
 
     private final String ADDRESS = "http://www.omdbapi.com/";
-    private final String API_KEY = "?apikey=20731567&t=";
+    private final String API_KEY = System.getenv("OMDB_API_KEY");
     private List<SeriesInfo> seriesInfos = new ArrayList<>();
 
     private SeriesRepository repository;
@@ -36,6 +35,8 @@ public class SeriesMenu {
                     \n1 - Search series
                     2 - Search episodes
                     3 - List searched series
+                    4 - Find series by title
+                    5 - Find series by actor
                     
                     0 - Quit""");
             choice = sc.nextInt();
@@ -54,11 +55,19 @@ public class SeriesMenu {
                     listSearchedSeries();
                     break;
 
+                case 4:
+                    findSeriesByTitle();
+                    break;
+
+                case 5:
+                    findSeriesByActor();
+                    break;
+
                 case 0:
                     break;
 
                 default:
-                    System.out.println("Invalid option!");
+                    System.out.println("\nInvalid option!");
                     break;
             }
         }
@@ -73,7 +82,7 @@ public class SeriesMenu {
     }
 
     private SeriesInfo getSeriesInfo(){
-        System.out.println("Enter the series name to search: ");
+        System.out.print("Enter the series name to search: ");
         var seriesName = sc.nextLine();
         var json = consumption.getData(ADDRESS + API_KEY + seriesName.replace(" ", "+"));
         return converter.getData(json, SeriesInfo.class);
@@ -85,9 +94,7 @@ public class SeriesMenu {
         System.out.print("Choose a series by name: ");
         String seriesName = sc.nextLine();
 
-        Optional<Series> seriesOptional = series.stream()
-                .filter(s -> s.getTitle().toLowerCase().contains(seriesName.toLowerCase()))
-                .findFirst();
+        Optional<Series> seriesOptional = repository.findByTitleContainingIgnoreCase(seriesName);
 
         if(seriesOptional.isPresent()){
             var seriesFound = seriesOptional.get();
@@ -117,5 +124,35 @@ public class SeriesMenu {
         series = repository.findAll();
         series.stream().sorted(Comparator.comparing(Series::getGenre))
                 .forEach(System.out::println);
+    }
+
+    private void findSeriesByTitle() {
+        System.out.print("Enter series title: ");
+        var seriesName = sc.nextLine();
+        Optional<Series> seriesFound = repository.findByTitleContainingIgnoreCase(seriesName);
+
+        if(seriesFound.isPresent()){
+            System.out.println("Series data: " + seriesFound.get());
+        } else {
+            System.out.println("Series not found!");
+        }
+    }
+
+    private void findSeriesByActor() {
+        System.out.print("Enter the actor's name: ");
+        var actorName = sc.nextLine();
+
+        System.out.print("Ratings starting from what value?");
+        var rating = sc.nextDouble();
+
+        List<Series> seriesList = repository.findByActorsContainingIgnoreCaseAndRatingGreaterThanEqual(actorName, rating);
+
+        if(seriesList.isEmpty()){
+            System.out.println("Actor not found!");
+
+        } else {
+            System.out.println("\nSeries that " + actorName + " worked on: ");
+            seriesList.forEach(s -> System.out.println(s.getTitle() + " | " + s.getGenre() + " | rating: " + s.getRating()));
+        }
     }
 }
