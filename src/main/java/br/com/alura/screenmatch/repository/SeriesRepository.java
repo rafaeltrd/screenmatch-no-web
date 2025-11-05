@@ -1,5 +1,6 @@
 package br.com.alura.screenmatch.repository;
 
+import br.com.alura.screenmatch.model.CategoryGenre;
 import br.com.alura.screenmatch.model.Series;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -10,4 +11,10 @@ public interface SeriesRepository extends JpaRepository<Series, Long> {
     Optional<Series> findByTitleContainingIgnoreCase(String seriesTitle);
 
     List<Series> findByActorsContainingIgnoreCaseAndRatingGreaterThanEqual(String actorName, Double rating);
+
+    List<Series> findTop5ByOrderByRatingDesc();
+
+    List<Series> findSeriesByGenre(CategoryGenre genre);
+
+    CategoryGenre Genre(CategoryGenre genre);
 }

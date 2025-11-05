@@ -1,9 +1,6 @@
 package br.com.alura.screenmatch.menu;
 
-import br.com.alura.screenmatch.model.Episode;
-import br.com.alura.screenmatch.model.SeasonInfo;
-import br.com.alura.screenmatch.model.Series;
-import br.com.alura.screenmatch.model.SeriesInfo;
+import br.com.alura.screenmatch.model.*;
 import br.com.alura.screenmatch.repository.SeriesRepository;
 import br.com.alura.screenmatch.service.APIConsumption;
 import br.com.alura.screenmatch.service.DataConverter;
@@ -37,6 +34,8 @@ public class SeriesMenu {
                     3 - List searched series
                     4 - Find series by title
                     5 - Find series by actor
+                    6 - Top 5 series
+                    7 - Find series by genre
                     
                     0 - Quit""");
             choice = sc.nextInt();
@@ -61,6 +60,14 @@ public class SeriesMenu {
 
                 case 5:
                     findSeriesByActor();
+                    break;
+
+                case 6:
+                    findTop5Series();
+                    break;
+
+                case 7:
+                    findSeriesByGenre();
                     break;
 
                 case 0:
@@ -153,6 +160,44 @@ public class SeriesMenu {
         } else {
             System.out.println("\nSeries that " + actorName + " worked on: ");
             seriesList.forEach(s -> System.out.println(s.getTitle() + " | " + s.getGenre() + " | rating: " + s.getRating()));
+        }
+    }
+
+    private void findTop5Series() {
+        List<Series> topSeries = repository.findTop5ByOrderByRatingDesc();
+
+        topSeries.forEach(s -> System.out.println(s.getTitle() + " | " + s.getGenre() + " | rating: " + s.getRating()));
+    }
+
+    private void findSeriesByGenre() {
+        System.out.println("""
+            Which language would you like to search for:
+            1 - English
+            2 - Portuguese""");
+
+        var choice = sc.nextInt();
+
+        System.out.print("Enter genre: ");
+        sc.nextLine();
+        var genre = sc.nextLine();
+
+        switch (choice) {
+            case 1:
+                CategoryGenre categoryGenre = CategoryGenre.fromString(genre);
+                List<Series> seriesByGenre = repository.findSeriesByGenre(categoryGenre);
+                seriesByGenre.forEach(System.out::println);
+
+                break;
+
+            case 2:
+                CategoryGenre categoryGenrePortuguese = CategoryGenre.fromPortuguese(genre);
+                List<Series> seriesByGenrePortuguese = repository.findSeriesByGenre(categoryGenrePortuguese);
+                seriesByGenrePortuguese.forEach(System.out::println);
+
+                break;
+
+            default:
+                System.out.println("Invalid option!");
         }
     }
 }
